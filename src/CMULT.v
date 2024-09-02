@@ -1,32 +1,13 @@
 module CMULT (
-	input wire [15:0] a_i,
-	input wire [15:0] a_r,
-	input wire [15:0] b_i,
-	input wire [15:0] b_r,
-	output reg [15:0] c_i,
-	output reg [15:0] c_r,
-
-	input wire enable,
-	input wire clk,
-	output reg ready
+	input wire [31:0] a_i,
+	input wire [31:0] a_r,
+	input wire [31:0] b_i,
+	input wire [31:0] b_r,
+	output reg [31:0] c_i,
+	output reg [31:0] c_r
 );
-	reg [4:0] state;
-	always @(posedge clk) begin
-		if ((state == 4'b0000) && (enable && ready)) begin
-			ready <= 1'b0;
-			state <= 4'b0001;
-		end
-		if (state == 4'b0001) begin
-			c_r <= a_r*b_r;
-			state <= 4'b0010;
-		end
-		if (state == 4'b0010) begin
-			c_r <= c_r - a_i*b_i;
-			state <=
-		if (state == 4'b1111) begin
-			ready <= 1'b1;
-		end
-
-
+	//Fixed point 2^-20 scaling factor	
+	assign c_r = ((a_r * b_r) << 20) - ((a_i*b_i) << 20);
+	assign c_i = ((a_i * b_r) << 20) + ((a_r * b_i) << 20);
 
 endmodule
