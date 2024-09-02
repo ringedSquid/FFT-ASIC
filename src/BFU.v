@@ -1,29 +1,33 @@
+`include "CMULT.v"
+
 module BFU (
-	input wire [15:0] a_r_in,
-	input wire [15:0] a_i_in,
-	input wire [15:0] b_r_in,
-	input wire [15:0] b_i_in,
-	input wire [15:0] cos_k,
-	input wire [15:0] isin_k,
-	output reg [15:0] a_r_out,
-	output reg [15:0] a_i_out,
-	output reg [15:0] b_r_out,
-	output reg [15:0] b_i_out,
-
-	input wire clk
+	input wire [31:0] a_r_in,
+	input wire [31:0] a_i_in,
+	input wire [31:0] b_r_in,
+	input wire [31:0] b_i_in,
+	input wire [31:0] cos_k,
+	input wire [31:0] isin_k,
+	output wire [31:0] a_r_out,
+	output wire [31:0] a_i_out,
+	output wire [31:0] b_r_out,
+	output wire [31:0] b_i_out,
 );
-	reg [2:0] state;
-	reg [15:0] wb_r;
-	reg [15:0] wb_i;
-
-	always @(posedge clk) begin
-		if (state == 3'b001) begin
-
-		end
-
-
-	end
-
 	
+	wire [31:0] wb_r;
+	wire [31:0] wb_i;
+
+	CMULT cmult (
+		.a_r(b_r_in),
+		.a_i(b_i_in),
+		.b_r(cos_k),
+		.b_i(isin_k),
+		.c_r(wb_r),
+		.c_i(wb_i)
+	);
+
+	assign a_r_out = a_r_in + wb_r;
+	assign a_i_out = a_i_in + wb_i;
+	assign a_r_out = a_r_in + ~(wb_r + 1'b1);
+	assign a_i_out = a_i_in + ~(wb_i + 1'b1);
 	
 endmodule
